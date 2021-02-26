@@ -1,0 +1,49 @@
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faUndo } from "@fortawesome/free-solid-svg-icons";
+
+import IconButton from "../components/IconButton";
+
+export default function ToDoList(props) {
+  const renderRows = () => {
+    const list = props.list || [];
+
+    return list.map((todo) => (
+      <tr key={todo._id}>
+        <td className={todo.done ? "markedAsDone" : ""}>{todo.description}</td>
+        <td>
+          <IconButton
+            style="success"
+            icon={faCheck}
+            onClick={() => props.handleMarkAsDone(todo)}
+            hide={todo.done}
+          />
+          <IconButton
+            style="warning"
+            icon={faUndo}
+            onClick={() => props.handleMarkAsPending(todo)}
+            hide={!todo.done}
+          />
+          <IconButton
+            style="danger"
+            icon={faTrash}
+            onClick={() => props.handleRemove(todo)}
+            hide={!todo.done}
+          />
+        </td>
+      </tr>
+    ));
+  };
+
+  return (
+    <table className="table">
+      <thead>
+        <tr>
+          <th>Descrição</th>
+          <th className="tableActions">Ações</th>
+        </tr>
+      </thead>
+      <tbody>{renderRows()}</tbody>
+    </table>
+  );
+}
