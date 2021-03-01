@@ -1,3 +1,7 @@
+import { useEffect } from "react";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { faWindowClose } from "@fortawesome/free-solid-svg-icons";
@@ -5,12 +9,23 @@ import { faWindowClose } from "@fortawesome/free-solid-svg-icons";
 import Grid from "./Grid";
 import IconButton from "./IconButton";
 
-export default function ToDoForm(props) {
+import {
+  add,
+  changeDescription,
+  search,
+  clearToDoDescription
+} from "../store/actions/todoActions";
+
+function ToDoForm(props) {
+  useEffect(() => {
+    props.search();
+  }, []);
+
   const keyHandler = (e) => {
     if (e.key === "Enter") {
-      e.shiftKey ? props.handleSearch() : props.handleAdd();
+      e.shiftKey ? props.search() : props.add(props.description);
     } else if (e.key === "Escape") {
-      props.handleClear();
+      props.clearToDoDescription();
     }
   };
 
@@ -24,19 +39,42 @@ export default function ToDoForm(props) {
           placeholder="Adicione uma tarefa"
           value={props.description}
           onKeyUp={keyHandler}
-          onChange={props.handleChange}
+          onChange={props.changeDescription}
         />
       </Grid>
 
       <Grid cols="12 3 2">
-        <IconButton style="primary" icon={faPlus} onClick={props.handleAdd} />
-        <IconButton style="info" icon={faSearch} onClick={props.handleSearch} />
+        <IconButton
+          style="primary"
+          icon={faPlus}
+          onClick={() => props.add(props.description)}
+        />
+        <IconButton
+          style="info"
+          icon={faSearch}
+          onClick={() => props.search()}
+        />
         <IconButton
           style="secondary"
           icon={faWindowClose}
-          onClick={props.handleClear}
+          onClick={() => props.clearToDoDescription()}
         />
       </Grid>
     </div>
   );
 }
+
+function mapStateToProps(state) {
+  return {
+    description: state.todo.description
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(
+    { add, changeDescription, search, clearToDoDescription },
+    dispatch
+  );
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ToDoForm);

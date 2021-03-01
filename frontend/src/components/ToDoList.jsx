@@ -1,10 +1,19 @@
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { faUndo } from "@fortawesome/free-solid-svg-icons";
 
 import IconButton from "../components/IconButton";
 
-export default function ToDoList(props) {
+import {
+  markAsDone,
+  markAsPending,
+  removeToDo
+} from "../store/actions/todoActions";
+
+function ToDoList(props) {
   const renderRows = () => {
     const list = props.list || [];
 
@@ -15,19 +24,19 @@ export default function ToDoList(props) {
           <IconButton
             style="success"
             icon={faCheck}
-            onClick={() => props.handleMarkAsDone(todo)}
+            onClick={() => props.markAsDone(todo)}
             hide={todo.done}
           />
           <IconButton
             style="warning"
             icon={faUndo}
-            onClick={() => props.handleMarkAsPending(todo)}
+            onClick={() => props.markAsPending(todo)}
             hide={!todo.done}
           />
           <IconButton
             style="danger"
             icon={faTrash}
-            onClick={() => props.handleRemove(todo)}
+            onClick={() => props.removeToDo(todo)}
             hide={!todo.done}
           />
         </td>
@@ -47,3 +56,18 @@ export default function ToDoList(props) {
     </table>
   );
 }
+
+function mapStateToProps(state) {
+  return {
+    list: state.todo.list
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(
+    { markAsDone, markAsPending, removeToDo },
+    dispatch
+  );
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ToDoList);
